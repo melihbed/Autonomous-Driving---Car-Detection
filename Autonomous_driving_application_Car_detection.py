@@ -128,29 +128,21 @@ classes = tf.random.normal([54,], mean=1, stddev=4, seed = 1)
 
 print(f"Scores: {scores}\n Boxes: {boxes}\n Classes: {classes}")
 
-max_boxes = 10
-iou_threshold = 0.5
+def yolo_non_max_suppression(boxes, scores, classes, max_boxes, iou_threshold=0.6):
+        """
+        Applies Non-max suppression (NMS) to set of boxes
+        """
+        # TODO: Use tf.image.non_max_suppression() to get the list of indices corresponding to boxes you keep
+        selected_indices = tf.image.non_max_suppression(scores=scores, max_output_size=max_boxes, iou_threshold=iou_threshold)
+        
+        # TODO: Use tf.gather() to select only nms_indices from scores, boxes and classes
+        selected_scores = tf.gather(scores, indices=selected_indices)
+        selected_classes = tf.gather(classes, indices=selected_indices)
+        selected_boxes = tf.gather(boxes, indices=selected_indices)
 
-# TODO: Use tf.image.non_max_suppression() to get the list of indices corresponding to boxes you keep
-selected_indices = tf.image.non_max_suppression(
-    boxes=boxes,
-    scores=scores,
-    max_output_size=max_boxes,
-    iou_threshold=iou_threshold
-    )
+        # Check up 
+        print(f"After NMS Scores: {selected_scores}\n After NMS Boxes: {selected_boxes}\n After NMS Classes: {selected_classes}")
 
-# TODO: Use tf.gather() to select only nms_indices from scores, boxes and classes
-scores = tf.gather(scores, indices=selected_indices)
-boxes = tf.gather(boxes, indices=selected_indices)
-classes = tf.gather(classes, indices=selected_indices)
-
-print(f"After NMS Scores: {scores}\n After NMS Boxes: {boxes}\n After NMS Classes: {classes}")
-
-# TODO: Select the box that has the highest score.
-
-# TODO: Compute the overlap of this box with all other boxes, and remove boxes that overlap significantly (iou >= iou_threshold).
-
-
-# TODO: Go back to step 1 and iterate until there are no more boxes with a lower score than the currently selected box.
-
-
+        return selected_scores, selected_boxes, selected_classes
+    
+     
